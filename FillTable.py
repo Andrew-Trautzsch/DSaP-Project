@@ -7,8 +7,8 @@ import Encryption
 connection = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='102403',
-    database='dsap'
+    password='password',
+    database='database'
 )
 
 cursor = connection.cursor(dictionary=True)
