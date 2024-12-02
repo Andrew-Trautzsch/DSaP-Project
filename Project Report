@@ -1,0 +1,88 @@
+DSaP Project Report
+Team 16 - Andrew Trautzsch
+
+I am the only team member, so all contributions are from myself
+
+
+System Design:
+
+The system is meant to represent a cloud database. It uses MySQL as a database service. It consists of the following key components:
+	1.User Authentication Layer: Handles secure user authentication using hashed passwords. Passwords are hashed using SHA-256 to ensure the database does not 
+store original passwords.
+
+	2.Access Control Mechanism: Implements role-based access control to distinguish between two user groups: Group H (Admin) and Group R (Restricted). 
+Group H can access all fields and add data, while Group R has restricted access to sensitive fields like first_name and last_name.
+
+	3.Data Encryption: Sensitive attributes (gender and age) are encrypted using Fernet symmetric encryption before being stored in the database.
+
+	4.Integrity Verification: Ensures the integrity of query results by using cryptographic hash functions to verify both individual data items
+ and query completeness.
+
+	5.Database Layer: A MySQL database hosts the healthcare table, ensuring scalability and reliable storage.
+
++----------------+       +-----------------------+
+|   User         |       |      Application      |
+| Interface      |       |         Server        |
+| (Web Browser)  |       | (Flask Application)   |
++----------------+       +-----------------------+
+        |                             |
+        v                             v
++----------------+       +-----------------------+
+| Authentication |       | Access Control Layer  |
+|    Layer       |       | (Role-Based Security) |
++----------------+       +-----------------------+
+        |                             |
+        v                             v
++----------------+       +-----------------------+
+| Encryption     |       | Database Interaction |
+| and Integrity  |       | (SQL Queries)        |
+| Mechanisms     |       |                      |
++----------------+       +-----------------------+
+        |                             |
+        v                             v
++---------------------------------------------+
+|              MySQL Database                 |
+|  (Healthcare Table with Encrypted Fields)   |
++---------------------------------------------+
+
+
+Implementation of Security Features:
+
+2.1 User Authentication
+
+Implementation: The system uses SHA-256 to hash user passwords before storing them in the database. During login, the hashed password is verified against the stored hash to authenticate the user.
+Reasoning: Hashing ensures that even if the database is compromised, plaintext passwords cannot be extracted, mitigating insider threats.
+
+2.2 Access Control
+
+Implementation: Two user roles are implemented:
+Group H (Admin): Accesses all fields and can add new data items.
+Group R (Restricted): Can view limited fields (gender, age, weight, height, health_history) but cannot see first_name and last_name or add new data.
+Reasoning: Role-based access control enforces principle of least privilege, ensuring restricted users cannot view or manipulate unauthorized data.
+
+2.3 Query Integrity Protection
+
+Single Data Item Integrity:
+Implementation: Each data item is hashed using SHA-256. When data is retrieved, its hash is recomputed and compared to the stored hash to detect modifications.
+Reasoning: Cryptographic hashing ensures that tampered or fake data is detectable with high confidence.
+
+Query Completeness:
+Implementation: A completeness hash is computed by concatenating hashes of all returned data items and hashing the result. This is compared to a previously stored hash to detect missing or excluded items.
+Reasoning: Ensures users can verify that all expected data items are included in the query results.
+
+2.4 Data Confidentiality
+
+Implementation: The gender and age fields are encrypted using Fernet symmetric encryption. The encryption key is securely stored and managed separately.
+Reasoning: Encrypting sensitive fields prevents the cloud from learning sensitive information while still allowing authorized users to decrypt and view them.
+
+
+Limitations:
+
+No Query Support for Encrypted Fields: The current implementation does not support querying encrypted fields like gender and age.
+For example, queries like "all users with age > 30" are not supported.
+
+Key Management: The encryption key is stored locally in a file. In a real-world scenario,
+a more secure key management system (e.g., AWS KMS or Azure Key Vault) would be required.
+
+Limited Query Completeness: Query completeness detection assumes that the completeness hash is accurate,
+which requires trusted setup for initial data insertion.
