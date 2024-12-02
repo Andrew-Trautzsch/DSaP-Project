@@ -10,8 +10,8 @@ app.secret_key = "your_secret_key_here"
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="102403",
-    database="dsap"
+    password="password",
+    database="database"
 )
 
 cursor = db.cursor(dictionary=True)
