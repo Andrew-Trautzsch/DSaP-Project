@@ -17,3 +17,5 @@ db = mysql.connector.connect(
 
 Upon establishing connection, run SQL code in Schema.SQL
 And run FillTable.py to populate healthcare table
+
+from there open http://127.0.0.1:5000 to use the website
