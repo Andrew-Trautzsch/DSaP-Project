@@ -3,7 +3,7 @@
 To run project
 
 First install MySQL from https://dev.mysql.com/downloads/ and run setup
-Also install dependancies in Dependancies.txt
+Also install dependancies in Dependancies.txt (pip install -r Dependancies.txt)
 
 Upon setup, please set information to be correct in the code:
 
